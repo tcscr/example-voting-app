@@ -16,6 +16,7 @@ jobs:
       - name: Sysdig Secure Inline Scan
         uses: sysdiglabs/scan-action@v3
         with:
-          image: ${{ secrets.ACR_IMAGE_NAME }}
-          sdc-token: ${{ secrets.SYSDIG_SECURE_TOKEN }}
-          sdc-monitor-token: ${{ secrets.SYSDIG_MONITORING_TOKEN }}
+          image-tag: ${{ secrets.ACR_IMAGE_NAME }}
+          sysdig-secure-token: ${{ secrets.SYSDIG_SECURE_TOKEN }}
+          sysdig-monitor-token: ${{ secrets.SYSDIG_MONITORING_TOKEN }}
+          sysdig-secure-url: https://us2.app.sysdig.com
