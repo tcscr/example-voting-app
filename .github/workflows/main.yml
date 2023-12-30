@@ -1,0 +1,21 @@
+name: ACR Sysdig Secure Inline Scan
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  sysdig-scan:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+
+      - name: Sysdig Secure Inline Scan
+        uses: sysdiglabs/scan-action@v3
+        with:
+          image: ${{ secrets.ACR_IMAGE_NAME }}
+          sdc-token: ${{ secrets.SYSDIG_SECURE_TOKEN }}
+          sdc-monitor-token: ${{ secrets.SYSDIG_MONITORING_TOKEN }}
