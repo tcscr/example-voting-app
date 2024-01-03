@@ -1,0 +1,31 @@
+name: AKS Deployment
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set up Azure CLI
+        uses: azure/setup-aks@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+      - name: Terraform Init & Apply
+        run: |
+          terraform init
+          terraform apply -auto-approve
+
+      - name: Configure kubectl
+        run: az aks get-credentials --resource-group sdtf-rrg --name sdtf-aks
+
+      - name: Apply Kubernetes Resources
+        run: kubectl apply -f .
+        working-directory: /mnt/c/Users/thaylorc/Desktop/AKS/sdtf/terraform-aks-voting-app/
