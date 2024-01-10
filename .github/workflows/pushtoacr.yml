@@ -23,7 +23,7 @@ jobs:
 
       - name: Push YAML Manifests to ACR
         run: |
-          az acr build --registry sdtfacr --file /k8s-specifications/db-deployment.yaml .
+          az acr build --registry sdtfacr --file ./k8s-specifications/db-deployment.yaml .
           az acr build --registry sdtfacr --file ./k8s-specifications/db-service.yaml .
 
       - name: Logout from Azure
