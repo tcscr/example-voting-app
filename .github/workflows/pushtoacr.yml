@@ -23,7 +23,8 @@ jobs:
 
       - name: Push YAML Manifests to ACR
         run: |
-          az acr helm push -n sdtfacr example-voting-app/k8s-specifications/* ${{ secrets.ACR_REGISTRY }}
+          az acr build --registry sdtfacr --image db-deployment:latest --file k8s-specifications/db-deployment.yaml .
+          az acr build --registry sdtfacr --image db-service:latest --file k8s-specifications/db-service.yaml .
 
       - name: Logout from Azure
         run: az logout
