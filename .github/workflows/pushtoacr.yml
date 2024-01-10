@@ -23,10 +23,11 @@ jobs:
 
       - name: Push YAML Manifests to ACR
         run: |
-          for file in /k8s-specifications/*.yaml; do
-            az acr task create --name push-yaml \
-                               --registry ${{ secrets.ACR_REGISTRY }} \
-                               --context .
+          for file in example-voting-app/k8s-specifications/*.yaml; do
+            az acr repository import \
+              --name ${{ secrets.ACR_REGISTRY }} \
+              --source $file \
+              --image $(basename $file .yaml)
           done
 
       - name: Logout from Azure
