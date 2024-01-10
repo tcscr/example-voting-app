@@ -25,7 +25,7 @@ jobs:
       uses: azure/CLI@v1
       with:
         azcliversion: latest
-        inlineScript: |
+        run: |
           az configure --defaults acr=${{ env.AZURE_CONTAINER_REGISTRY }}
           az acr build -t  -t ${{ env.REGISTRY_URL }}/${{ env.PROJECT_NAME }}:${{ github.sha }}
 		  
