@@ -1,0 +1,34 @@
+name: Push YAML Manifests to ACR
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  push-to-acr:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v2
+
+      - name: Azure Login
+        uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+      - name: Login to Azure Container Registry
+        run: az acr login --name ${{ secrets.ACR_REGISTRY }}
+
+      - name: Push YAML Manifests to ACR
+        run: |
+          for file in example-voting-app/k8s-specifications/*.yaml; do
+            az acr task create --name push-yaml-${file} \
+                               --registry ${{ secrets.ACR_REGISTRY }} \
+                               --file ${file} \
+                               --context .
+          done
+
+      - name: Logout from Azure
+        run: az logout
