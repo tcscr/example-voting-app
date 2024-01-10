@@ -1,0 +1,48 @@
+name: Build and deploy to Azure Kubernetes Service
+
+env:
+  AZURE_CONTAINER_REGISTRY: sdtfacr     # set this to the name of your container registry
+  PROJECT_NAME: sdtfprj1                # set this to your project's name
+  RESOURCE_GROUP: rg-shining-gnat       # set this to the resource group containing your AKS cluster
+  CLUSTER_NAME: cluster-notable-shrimp  # set this to the name of your AKS cluster
+  REGISTRY_URL: sdtfacr.azurecr.io      # set this to the URL of your registry
+
+ 
+on: [push]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Azure Login
+      uses: azure/login@v1
+      with:
+        creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+    - name: Build image on ACR
+      uses: azure/CLI@v1
+      with:
+        azcliversion: latest
+        inlineScript: |
+          az configure --defaults acr=${{ env.AZURE_CONTAINER_REGISTRY }}
+          az acr build -t  -t ${{ env.REGISTRY_URL }}/${{ env.PROJECT_NAME }}:${{ github.sha }}
+		  
+	  - name: Build and push Docker images
+      run: |
+        cd k8s-specifications
+        for file in $(ls *.yaml); do
+          kubectl apply -f $file
+        done
+    
+    - name: Gets K8s context
+      uses: azure/aks-set-context@v3
+      with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+          resource-group: ${{ env.RESOURCE_GROUP }}
+          cluster-name: ${{ env.CLUSTER_NAME }}
+      id: login
+
+	  - name: Deploy to AKS
+      run: kubectl apply -f k8s-specifications
