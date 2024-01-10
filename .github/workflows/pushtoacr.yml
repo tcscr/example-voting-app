@@ -24,7 +24,7 @@ jobs:
       - name: Push YAML Manifests to ACR
         run: |
           for file in example-voting-app/k8s-specifications/*.yaml; do
-            az acr repository import \
+            az acr import \
               --name ${{ secrets.ACR_REGISTRY }} \
               --source $file \
               --image $(basename $file .yaml)
